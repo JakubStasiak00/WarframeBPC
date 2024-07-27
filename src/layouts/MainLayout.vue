@@ -28,7 +28,7 @@
       <router-view />
     </q-page-container>
 
-    <q-footer reveal elevated class="bg-grey-8 text-white">
+    <q-footer reveal elevated class="bg-primary text-white">
       Created by Jacob
     </q-footer>
 
