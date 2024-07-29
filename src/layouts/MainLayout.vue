@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpR fff">
 
     <q-header reveal elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
@@ -28,7 +28,7 @@
       <router-view />
     </q-page-container>
 
-    <q-footer reveal elevated class="bg-primary text-white">
+    <q-footer elevated class="bg-primary text-white">
       Created by Jacob
     </q-footer>
 
