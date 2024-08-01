@@ -8,34 +8,57 @@
       </q-file>
       <q-btn square color="primary" icon="send" @click="sendScreenshotToBackend()" />
     </div>
-    <div v-if="itemsData.length > 0" class="row items-center justify-center q-py-md" style="gap: 40px;"
-      :style="listOfItems ? 'display: grid; grid-template-columns: repeat(4, 1fr); padding-inline: 3rem' : ''">
-      <q-card v-for="item, index in itemsData" :key="index" style="min-width: 13rem;">
-        <q-card-section class="flex column items-center justify-around" style="gap: 1rem; max-width: 30rem;">
+    <div v-if="itemsData.length > 0" class="row items-center justify-center q-py-md"
+      style="gap: 40px; display: grid; grid-template-columns: repeat(4, 1fr); padding-inline: 3rem"
+      :style="$q.screen.lt.lg ? 'grid-template-columns: repeat(3, 1fr);' : ''">
+      <q-card v-for="item, index in itemsData" :key="index" style="min-width: 13rem; " class="itemCardLayout">
+
+        <q-card-section class="flex column items-center justify-around"
+          style="gap: 1rem; max-width: 30rem; grid-area: itemIcon;">
           <div><img :src="`https://warframe.market/static/assets/${itemsInformation[index].data.i18n.en.subIcon}`"
               style="max-height: 5rem;" alt="image"></div>
           <div class="text-h6 text-wrap">{{ itemsInformation[index].data.i18n.en.name }}</div>
         </q-card-section>
-        <q-card-section>
-          <p>Top sell orders:</p>
+
+        <q-card-section style="grid-area: ducats;">
+          <p class="flex text-h6 justify-center"><span>{{ itemsInformation[index].data.ducats }}</span><img
+              src="../assets/OrokinDucats.webp" style="max-height: 32px;" alt="ducat"></p>
+        </q-card-section>
+
+        <q-card-section class="flex items-center text-h6" style="grid-area: ducsPerPlat;">
+          <p>{{ calculateDucatToPlatinumRatio(itemsInformation[index].data.ducats,
+            getAveragePlatinum(item.data)) }}
+          </p>
+          <p class="flex items-center">
+            <img src="../assets/OrokinDucats.webp" style="max-height: 32px;" alt="ducat">
+            <span>/</span>
+            <img src="../assets/PlatinumLarge.webp" style="max-height: 24px;" alt="platinum">
+            <q-icon name="info" class="text-subtitle2 self-start">
+              <q-tooltip anchor="top middle" self="bottom left" :offset="[10, 10]">
+                Ducat per platinum ratio according to the top 5 sale orders. <br />
+                For greater accuracy use warframe.market ducanator !
+              </q-tooltip>
+            </q-icon>
+          </p>
+        </q-card-section>
+
+        <q-card-section style="grid-area: sellOrders;">
+          <p class="text-subtitle2">Top sell orders:</p>
           <ol>
-            <li>
-              {{ item.data.sell[0].platinum }} <img src="../assets/PlatinumLarge.webp" style="max-height: 16px;" alt="">
-            </li>
-            <li>
-              {{ item.data.sell[1].platinum }} <img src="../assets/PlatinumLarge.webp" style="max-height: 16px;" alt="">
-            </li>
-            <li>
-              {{ item.data.sell[2].platinum }} <img src="../assets/PlatinumLarge.webp" style="max-height: 16px;" alt="">
-            </li>
-            <li>
-              {{ item.data.sell[3].platinum }} <img src="../assets/PlatinumLarge.webp" style="max-height: 16px;" alt="">
-            </li>
-            <li>
-              {{ item.data.sell[4].platinum }} <img src="../assets/PlatinumLarge.webp" style="max-height: 16px;" alt="">
+            <li v-for="index in item.data.sell.length" :key="index">
+              Sold by <a target=”_blank” style="text-decoration: none;"
+                :href="`https://warframe.market/profile/${item.data.sell[index - 1].user.ingameName}`"
+                class="text-accent">{{ item.data.sell[index - 1].user.ingameName }}</a> for {{
+                  item.data.sell[index - 1].platinum }} <img src="../assets/PlatinumLarge.webp" style="max-height: 16px;"
+                alt="platinum">
             </li>
           </ol>
+          <br v-if="item.data.sell.length < 5" />
+          <br v-if="item.data.sell.length < 4" />
+          <br v-if="item.data.sell.length < 3" />
+          <br v-if="item.data.sell.length < 2" />
         </q-card-section>
+
       </q-card>
     </div>
   </q-page>
@@ -44,20 +67,20 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { ref } from 'vue';
+import { RootOrders, Data } from 'src/types/TopOrders';
+import { RootInfo } from 'src/types/ItemInformation';
+import { useQuasar } from 'quasar';
 
 defineOptions({
   name: 'IndexPage'
 });
 
-interface ItemData {
-  data: any;
-}
-
+const $q = useQuasar();
 const pickedScreenshot = ref<File | null>(null);
 const listOfItems = ref<string[] | null>(null);
 const listOfItemsUrlNames = ref<string[] | null>(null);
-const itemsData = ref<ItemData[]>([]);
-const itemsInformation = ref<ItemData[]>([]);
+const itemsData = ref<RootOrders[]>([]);
+const itemsInformation = ref<RootInfo[]>([]);
 
 console.log(itemsData.value);
 
@@ -100,4 +123,31 @@ const sendScreenshotToBackend = async () => {
   }
 }
 
+const getAveragePlatinum = (itemOrderData: Data): number => {
+  let x = 0;
+  for (let iterator = 0; iterator < itemOrderData.sell.length; iterator++) {
+    x += itemOrderData.sell[iterator].platinum;
+  }
+  return parseFloat((x / itemOrderData.sell.length).toFixed(2));
+}
+
+const calculateDucatToPlatinumRatio = (ducat: number, platinum: number) => {
+  return (ducat / platinum).toFixed(2);
+}
+
 </script>
+
+<style lang="scss">
+.itemCardLayout {
+  display: grid;
+  grid-template-areas:
+    "itemIcon itemIcon itemIcon itemIcon itemIcon itemIcon"
+    "ducats ducats ducats ducsPerPlat ducsPerPlat ducsPerPlat"
+    "sellOrders sellOrders sellOrders sellOrders sellOrders sellOrders ";
+  grid-template-columns: 1fr 1fr 10fr 10fr 2fr 2fr;
+}
+
+ol {
+  padding-left: 1rem;
+}
+</style>
