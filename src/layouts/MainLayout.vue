@@ -72,12 +72,15 @@ const openDrawer = () => {
 </script>
 
 <style lang="scss" scoped>
+$clr-link-dormant: rgb(160, 187, 235);
+$clr-link-hover: rgb(100, 210, 224);
+
 @mixin link-styling {
-  color: rgb(160, 187, 235);
+  color: $clr-link-dormant;
   font-size: 1rem;
 
   &:hover {
-    color: rgb(100, 210, 224);
+    color: $clr-link-hover;
   }
 }
 
@@ -100,7 +103,6 @@ const openDrawer = () => {
 
   &__logo {
     object-fit: contain;
-    color: green
   }
 
   &__menu {
