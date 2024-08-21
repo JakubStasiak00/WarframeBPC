@@ -23,6 +23,16 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/FutureUpdates.vue') },
     ],
   },
+  {
+    path: '/login',
+    component: () => import('layouts/NoAuthLayout.vue'),
+    children: [{ path: '', component: () => import('pages/UserLogin.vue') }],
+  },
+  {
+    path: '/register',
+    component: () => import('layouts/NoAuthLayout.vue'),
+    children: [{ path: '', component: () => import('pages/UserRegister.vue') }],
+  },
 
   // Always leave this as last one,
   // but you can also remove it

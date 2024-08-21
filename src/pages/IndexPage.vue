@@ -1,7 +1,7 @@
 <template>
-  <q-page class="row items-center justify-center q-py-md" style="gap: 40px;">
+  <q-page class="row items-center justify-center q-py-md base-font-size" style="gap: 40px;">
     <div v-if="!listOfItems" class="row items-center justify-around" style="gap: 1.5rem;">
-      <q-file outlined name="pickedScreenshot" v-model="pickedScreenshot">
+      <q-file outlined name="pickedScreenshot" v-model="pickedScreenshot" accept="image/*" label="Upload screenshot">
         <template v-slot:prepend>
           <q-icon name="image" />
         </template>
@@ -9,8 +9,7 @@
       <q-btn square color="primary" icon="send" @click="sendScreenshotToBackend()" />
     </div>
     <div v-if="itemsData.length > 0" class="row items-center justify-center q-py-md"
-      style="gap: 40px; display: grid; grid-template-columns: repeat(4, 1fr); padding-inline: 3rem"
-      :style="$q.screen.lt.lg ? 'grid-template-columns: repeat(3, 1fr);' : ''">
+      style="gap: 40px; display: grid; padding-inline: 3rem" :style="defineCardGrid()">
       <q-card v-for="item, index in itemsData" :key="index" style="min-width: 13rem; " class="itemCardLayout">
 
         <q-card-section class="flex column items-center justify-around"
@@ -82,7 +81,17 @@ const listOfItemsUrlNames = ref<string[] | null>(null);
 const itemsData = ref<RootOrders[]>([]);
 const itemsInformation = ref<RootInfo[]>([]);
 
-console.log(itemsData.value);
+const cardStyles = {
+  small: {
+    gridTemplateColumns: 'repeat(2, 1fr)',
+  },
+  medium: {
+    gridTemplateColumns: 'repeat(3, 1fr)',
+  },
+  large: {
+    gridTemplateColumns: 'repeat(4, 1fr)',
+  },
+};
 
 const sendScreenshotToBackend = async () => {
   const formData = new FormData();
@@ -121,6 +130,16 @@ const sendScreenshotToBackend = async () => {
   } catch (err) {
     console.log(err);
   }
+}
+
+const defineCardGrid = () => {
+  if ($q.screen.gt.md) {
+    return cardStyles.large
+  }
+  if ($q.screen.lt.md) {
+    return cardStyles.small
+  }
+  return cardStyles.medium
 }
 
 const getAveragePlatinum = (itemOrderData: Data): number => {
