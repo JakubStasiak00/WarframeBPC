@@ -1,28 +1,39 @@
 <template>
     <q-page>
-        <div class="login">
-            <h2 class="login__heading">Welcome back Tenno</h2>
-            <h3 class="login__encouragement"> Sign in below !</h3>
-            <q-form class="login__form" @submit.prevent="authenticateLogin">
-                <label class="login__label" for="username">Username :</label>
-                <q-input class="login__input login__input--username" v-model="username" outlined name="username"
-                    :rules="usernameRules" required placeholder="username">
-                    <template v-slot:prepend>
-                        <q-icon name="person" />
-                    </template>
-                </q-input>
-                <label class="login__label" for="password">Password :</label>
-                <q-input class="login__input login__input--password" v-model="password" outlined type="password"
-                    :rules="passwordRules" placeholder="password">
-                    <template v-slot:prepend>
-                        <q-icon name="lock" />
-                    </template>
-                </q-input>
+        <q-card class="login-banner">
+            <div class="login-banner__dummy"></div>
+            <div class="login">
+                <h2 class="login__heading">Welcome back Tenno!</h2>
+                <h3 class="login__encouragement"> Sign in below</h3>
+                <q-form class="login__form" @submit.prevent="authenticateLogin">
 
-                <q-btn class="login__button" label="Log in" type=submit color="primary" />
+                    <q-input class="login__input login__input--username" v-model="username" outlined name="username"
+                        required placeholder="username" id="username" dense>
+                        <template v-slot:prepend>
+                            <q-icon name="person" />
+                        </template>
+                    </q-input>
 
-            </q-form>
-        </div>
+                    <q-input class="login__input login__input--password" v-model="password" outlined type="password"
+                        placeholder="password" id="password" dense>
+                        <template v-slot:prepend>
+                            <q-icon name="lock" />
+                        </template>
+                    </q-input>
+
+                    <q-checkbox class="login__persistance" v-model="shouldPersist" label="Remember me"
+                        color="primary" />
+
+                    <q-btn class="login__button" label="Log in" type="submit" color="primary" />
+
+                    <div class="login__swap">Dont have an account yet ? <router-link class="login__link"
+                            to="/register">Register
+                            here</router-link>
+                    </div>
+
+                </q-form>
+            </div>
+        </q-card>
     </q-page>
 </template>
 
@@ -32,17 +43,7 @@ import { ref } from 'vue';
 
 const username = ref('');
 const password = ref('');
-const usernameRules = ref([
-    (val: string) => /^[a-zA-Z0-9]+$/.test(val) || 'Username should only contain letters and numbers',
-    (val: string) => val.length >= 4 || 'Username has to be at least 4 characters long',
-    (val: string) => val.length <= 18 || 'Username can not exceed 18 characters'
-])
-const passwordRules = ref([
-    (val: string) => /[a-z]/.test(val) || 'password must contain at least one lowercase letter',
-    (val: string) => /[A-Z]/.test(val) || 'password must contain at least one uppercase letter',
-    (val: string) => /[0-9]/.test(val) || 'password must contain at least one number',
-    (val: string) => val.length >= 8
-])
+const shouldPersist = ref(true);
 
 const authenticateLogin = () => {
     console.log('Login succesful !');
@@ -55,15 +56,43 @@ $text-dark: rgb(17, 17, 17);
 $text-grey: rgb(77, 77, 77);
 $text-light: rgb(173, 173, 173);
 
+.login-banner {
+    background-image: url(../assets/warframe-scene.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-inline: auto;
+    margin-block: clamp(1rem, 0.2rem + 8vw, 10rem);
+    width: clamp(40rem, 20rem + 40vw, 100rem);
+    border-radius: 1rem;
+}
+
+@media screen and (max-width: 700px) {
+    .login-banner {
+        grid-template-columns: 1fr;
+        grid-template-rows: 150px 1fr;
+        width: min(80rem, 80%);
+        background-position: -270px -230px;
+    }
+}
+
 .login {
-    width: min(90%, 550px);
     display: flex;
     flex-direction: column;
     margin-inline: auto;
+    background-color: white;
+    padding-left: min(3rem, 7vw);
+    padding-bottom: 2rem;
+    width: 100%;
+    border-bottom-left-radius: 0px !important;
 
     &__heading {
-        font-size: clamp(1.8rem, 1rem + 4vw, 3.2rem);
+        font-size: clamp(1.5rem, 1rem + 4vw, 3.2rem);
         margin-bottom: 0;
+        line-height: clamp(2rem, 1rem + 3vw, 3.5rem);
     }
 
     &__encouragement {
@@ -79,16 +108,33 @@ $text-light: rgb(173, 173, 173);
 
     }
 
-    &__label {
-        margin-left: 0.3rem;
-        margin-bottom: 0.4rem;
-        font-size: 1rem;
+    &__input {
+        margin-bottom: 1rem;
+    }
+
+    &__persistance {
+        padding-left: 1rem;
+        margin-bottom: 1rem;
     }
 
     &__button {
         width: 7rem;
         align-self: center;
+    }
+
+    &__swap {
+        text-align: center;
         margin-top: 1rem;
     }
+
+    &__link {
+        color: rgb(93, 72, 247);
+
+        &:hover {
+            color: rgb(193, 189, 255);
+        }
+    }
+
+
 }
 </style>
