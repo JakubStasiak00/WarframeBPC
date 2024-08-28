@@ -7,10 +7,10 @@
                 <h3 class="login__encouragement"> Sign in below</h3>
                 <q-form class="login__form" @submit.prevent="authenticateLogin">
 
-                    <q-input class="login__input login__input--username" v-model="username" outlined name="username"
-                        required placeholder="username" id="username" dense>
+                    <q-input class="login__input login__input--email" v-model="email" outlined name="email" required
+                        placeholder="email" id="email" dense>
                         <template v-slot:prepend>
-                            <q-icon name="person" />
+                            <q-icon name="mail" />
                         </template>
                     </q-input>
 
@@ -24,7 +24,8 @@
                     <q-checkbox class="login__persistance" v-model="shouldPersist" label="Remember me"
                         color="primary" />
 
-                    <q-btn class="login__button" label="Log in" type="submit" color="primary" />
+                    <q-btn class="login__button" label="Log in" type="submit" color="primary"
+                        @submit="loginUser(email, password)" />
 
                     <div class="login__swap">Dont have an account yet ? <router-link class="login__link"
                             to="/register">Register
@@ -39,14 +40,38 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from 'src/firebaseD/firebase-config';
+import { useRouter } from 'vue-router';
 
 
-const username = ref('');
+const email = ref('');
 const password = ref('');
 const shouldPersist = ref(true);
+const isPending = ref(true);
+const router = useRouter()
 
 const authenticateLogin = () => {
     console.log('Login succesful !');
+}
+
+const loginUser = async (email: string, password: string) => {
+
+    try {
+        const response = await signInWithEmailAndPassword(auth, email, password)
+        if (!response) {
+            throw new Error('login failed, try again later')
+        }
+        isPending.value = false
+        router.push('/')
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            alert(err.message)
+        }
+
+        isPending.value = false
+    }
+
 }
 
 </script>

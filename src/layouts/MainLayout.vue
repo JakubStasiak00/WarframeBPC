@@ -11,8 +11,10 @@
         </q-toolbar-title>
         <q-icon class="cst-banner__menu" name="menu" @click="openDrawer()" v-if="!$q.screen.gt.xs"></q-icon>
         <div class="cst-banner__credentials" v-else>
-          <router-link class="cst-banner__link" to="/login">Login</router-link> <span> or </span>
-          <router-link class="cst-banner__link" to="/register">Register</router-link>
+          <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
+            <img src="https://dummyimage.com/54x54/000/0011ff.jpg" alt="" class="cst-banner__user-image">
+          </q-avatar>
+          <span class="cst-banner__username"> {{ auth.uid }} </span>
         </div>
       </q-toolbar>
 
@@ -24,6 +26,13 @@
       </q-tabs>
 
       <q-drawer class="side-menu bg-primary" v-model="isDrawerOpened" side="right" v-if="!$q.screen.gt.xs">
+        <div class="cst-banner__credentials cst-banner__credentials--sidebar">
+          <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
+            <img src="https://dummyimage.com/54x54/000/0011ff.jpg" alt="" class="cst-banner__user-image">
+          </q-avatar>
+          <span class="cst-banner__username"> Username </span>
+        </div>
+
         <ul class="side-menu__list">
           <li class="side-menu__item">
             <router-link class="side-menu__link" to="/">Bulk Price Checker</router-link>
@@ -56,6 +65,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { ref } from 'vue';
+import { auth } from 'src/firebaseD/firebase-config';
 
 
 defineOptions({
@@ -99,6 +109,14 @@ $clr-link-hover: rgb(100, 210, 224);
     display: flex;
     align-items: center;
     margin-right: 0.4rem;
+
+    &--user {
+      font-size: clamp(2rem, 3vw + 0.5rem, 3rem);
+    }
+  }
+
+  &__username {
+    font-size: clamp(0.9rem, 0.3vw + 0.7rem, 1.2rem);
   }
 
   &__logo {
@@ -112,8 +130,13 @@ $clr-link-hover: rgb(100, 210, 224);
   &__credentials {
     display: flex;
     gap: 1rem;
-    align-items: baseline;
+    align-items: center;
     margin-right: calc(0.5rem + 1vw);
+
+    &--sidebar {
+      margin-block: 1rem;
+      padding-left: 1rem;
+    }
   }
 
   &__link {

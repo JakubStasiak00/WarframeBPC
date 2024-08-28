@@ -5,7 +5,7 @@
             <div class="register">
                 <h2 class="register__heading">Join our cause Tenno!</h2>
                 <h3 class="register__encouragement"> Create an account below</h3>
-                <q-form class="register__form" @submit.prevent="authenticateregister">
+                <q-form class="register__form" @submit.prevent="createUser(email, password)">
 
                     <q-input class="register__input register__input--username" v-model="username" outlined
                         name="username" required placeholder="username" id="username" :rules="usernameRules" lazy-rules
@@ -44,11 +44,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { auth } from 'src/firebaseD/firebase-config';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useRouter } from 'vue-router';
 
 
 const username = ref('');
 const password = ref('');
 const email = ref('');
+const router = useRouter();
+const isPending = ref(false);
 
 const usernameRules = ref([
     (val: string) => /^[a-zA-Z0-9]+$/.test(val) || 'Only letters and numbers',
@@ -67,8 +72,25 @@ const emailRules = ref([
     (val: string) => /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/.test(val) || 'E-mail format is incorrect'
 ])
 
-const authenticateregister = () => {
-    console.log('register succesful !');
+const createUser = async (email: string, password: string) => {
+
+    try {
+        console.log('start')
+        const response = await createUserWithEmailAndPassword(auth, email, password)
+        console.log('done')
+        if (!response.user) {
+            throw new Error('login failed, try again later')
+        }
+        isPending.value = false
+        router.push('/')
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            alert(err.message)
+        }
+
+        isPending.value = false
+    }
+
 }
 
 </script>
