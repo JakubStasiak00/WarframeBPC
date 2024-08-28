@@ -14,7 +14,8 @@
           <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
             <img src="https://dummyimage.com/54x54/000/0011ff.jpg" alt="" class="cst-banner__user-image">
           </q-avatar>
-          <span class="cst-banner__username"> {{ auth.uid }} </span>
+          <span class="cst-banner__username"> {{ auth.currentUser?.uid }}</span>
+          <q-icon class="cst-banner__logout" name="logout" @click="userLogout()"></q-icon>
         </div>
       </q-toolbar>
 
@@ -66,6 +67,7 @@
 import { useQuasar } from 'quasar';
 import { ref } from 'vue';
 import { auth } from 'src/firebaseD/firebase-config';
+import { useRouter } from 'vue-router';
 
 
 defineOptions({
@@ -74,11 +76,17 @@ defineOptions({
 
 const $q = useQuasar();
 const isDrawerOpened = ref(false);
+const router = useRouter()
 
 const openDrawer = () => {
   isDrawerOpened.value = !isDrawerOpened.value;
 }
 
+const userLogout = async () => {
+  await auth.signOut();
+  router.push('/login')
+
+}
 </script>
 
 <style lang="scss" scoped>
@@ -117,6 +125,10 @@ $clr-link-hover: rgb(100, 210, 224);
 
   &__username {
     font-size: clamp(0.9rem, 0.3vw + 0.7rem, 1.2rem);
+  }
+
+  &__logout {
+    color: red;
   }
 
   &__logo {

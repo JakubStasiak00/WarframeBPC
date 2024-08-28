@@ -65,10 +65,11 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { RootOrders, Data } from 'src/types/TopOrders';
 import { RootInfo } from 'src/types/ItemInformation';
 import { useQuasar } from 'quasar';
+import { auth } from 'src/firebaseD/firebase-config';
 
 defineOptions({
   name: 'IndexPage'
@@ -153,6 +154,10 @@ const getAveragePlatinum = (itemOrderData: Data): number => {
 const calculateDucatToPlatinumRatio = (ducat: number, platinum: number) => {
   return (ducat / platinum).toFixed(2);
 }
+
+onMounted(() => {
+  console.log(auth);
+})
 
 </script>
 

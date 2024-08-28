@@ -5,7 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-
+import { auth } from 'src/firebaseD/firebase-config';
 import routes from './routes';
 
 /*
@@ -20,7 +20,9 @@ import routes from './routes';
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+    : process.env.VUE_ROUTER_MODE === 'history'
+    ? createWebHistory
+    : createWebHashHistory;
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -30,6 +32,24 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  Router.beforeEach((to, from, next) => {
+    if (
+      auth.currentUser &&
+      (String(to.name) === 'login' || String(to.name) === 'register')
+    ) {
+      console.log('a');
+      next({ name: 'home' });
+    } else if (
+      !auth.currentUser &&
+      !(String(to.name) === 'login' || String(to.name) === 'register')
+    ) {
+      console.log('b');
+      next({ name: 'login' });
+    } else if (from.name !== to.name) {
+      next();
+    }
   });
 
   return Router;

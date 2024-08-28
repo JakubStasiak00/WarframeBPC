@@ -5,7 +5,7 @@
             <div class="login">
                 <h2 class="login__heading">Welcome back Tenno!</h2>
                 <h3 class="login__encouragement"> Sign in below</h3>
-                <q-form class="login__form" @submit.prevent="authenticateLogin">
+                <q-form class="login__form" @submit.prevent="loginUser(email, password)">
 
                     <q-input class="login__input login__input--email" v-model="email" outlined name="email" required
                         placeholder="email" id="email" dense>
@@ -24,8 +24,7 @@
                     <q-checkbox class="login__persistance" v-model="shouldPersist" label="Remember me"
                         color="primary" />
 
-                    <q-btn class="login__button" label="Log in" type="submit" color="primary"
-                        @submit="loginUser(email, password)" />
+                    <q-btn class="login__button" label="Log in" type="submit" color="primary" />
 
                     <div class="login__swap">Dont have an account yet ? <router-link class="login__link"
                             to="/register">Register
@@ -50,10 +49,6 @@ const password = ref('');
 const shouldPersist = ref(true);
 const isPending = ref(true);
 const router = useRouter()
-
-const authenticateLogin = () => {
-    console.log('Login succesful !');
-}
 
 const loginUser = async (email: string, password: string) => {
 
