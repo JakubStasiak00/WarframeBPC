@@ -73,6 +73,18 @@ const routes: RouteRecordRaw[] = [
     ],
     name: 'public-layout-registed',
   },
+  {
+    path: '/verify',
+    component: () => import('layouts/NoAuthLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'verify',
+        component: () => import('pages/VerifyAccount.vue'),
+      },
+    ],
+    name: 'public-layout-verify',
+  },
 
   // Always leave this as last one,
   // but you can also remove it

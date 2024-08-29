@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { auth } from 'src/firebaseD/firebase-config';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from 'src/firebaseD/firebase-config';
@@ -80,6 +80,12 @@ const createUser = async (email: string, password: string) => {
         const response = await createUserWithEmailAndPassword(auth, email, password)
         if (!response.user) {
             throw new Error('Creating user failed')
+        }
+        if (auth.currentUser) {
+            await updateProfile(auth.currentUser, {
+                displayName: username.value,
+                photoURL: 'https://firebasestorage.googleapis.com/v0/b/warframebpc.appspot.com/o/user-placeholder.jpg?alt=media&token=2e153f44-a117-4689-bfc3-4c175fd6a07c'
+            })
         }
         const userInfoRef = doc(db, 'usersInfo', `${auth.currentUser?.uid}`)
         await setDoc(userInfoRef, {

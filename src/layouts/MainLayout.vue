@@ -12,10 +12,10 @@
         <q-icon class="cst-banner__menu" name="menu" @click="openDrawer()" v-if="!$q.screen.gt.xs"></q-icon>
         <div class="cst-banner__credentials" v-else>
           <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
-            <img src="https://dummyimage.com/54x54/000/0011ff.jpg" alt="" class="cst-banner__user-image">
+            <img :src="userPhoto" alt="" class="cst-banner__user-image">
           </q-avatar>
-          <span class="cst-banner__username"> {{ auth.currentUser?.uid }}</span>
-          <q-icon class="cst-banner__logout" name="logout" @click="userLogout()"></q-icon>
+          <span class="cst-banner__username">{{ username }}</span>
+          <q-icon class="cst-banner__logout  text-h6" name="logout" @click="userLogout()"></q-icon>
         </div>
       </q-toolbar>
 
@@ -29,9 +29,10 @@
       <q-drawer class="side-menu bg-primary" v-model="isDrawerOpened" side="right" v-if="!$q.screen.gt.xs">
         <div class="cst-banner__credentials cst-banner__credentials--sidebar">
           <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
-            <img src="https://dummyimage.com/54x54/000/0011ff.jpg" alt="" class="cst-banner__user-image">
+            <img :src="userPhoto" alt="" class="cst-banner__user-image">
           </q-avatar>
-          <span class="cst-banner__username"> Username </span>
+          <span class="cst-banner__username">{{ username }}</span>
+          <q-icon class="cst-banner__logout text-h6" name="logout" @click="userLogout()"></q-icon>
         </div>
 
         <ul class="side-menu__list">
@@ -68,15 +69,13 @@ import { useQuasar } from 'quasar';
 import { ref } from 'vue';
 import { auth } from 'src/firebaseD/firebase-config';
 import { useRouter } from 'vue-router';
-
-
-defineOptions({
-  name: 'MainLayout'
-});
+import { onAuthStateChanged } from 'firebase/auth';
 
 const $q = useQuasar();
 const isDrawerOpened = ref(false);
 const router = useRouter()
+const username = ref('')
+const userPhoto = ref('')
 
 const openDrawer = () => {
   isDrawerOpened.value = !isDrawerOpened.value;
@@ -87,6 +86,11 @@ const userLogout = async () => {
   router.push('/login')
 
 }
+
+onAuthStateChanged(auth, () => {
+  username.value = String(auth.currentUser?.displayName)
+  userPhoto.value = String(auth.currentUser?.photoURL)
+})
 </script>
 
 <style lang="scss" scoped>

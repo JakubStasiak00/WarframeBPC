@@ -5,7 +5,6 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-import { auth } from 'src/firebaseD/firebase-config';
 import routes from './routes';
 
 /*
@@ -35,18 +34,26 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to, from, next) => {
+    const isAuth = Boolean(sessionStorage.getItem('isAuth'));
+    const isVerified = Boolean(sessionStorage.getItem('isVerified'));
+
     if (
-      auth.currentUser &&
-      (String(to.name) === 'login' || String(to.name) === 'register')
+      isAuth &&
+      (String(to.name) === 'login' ||
+        String(to.name) === 'register' ||
+        String(to.name) === 'verify') &&
+      isVerified
     ) {
       console.log('a');
       next({ name: 'home' });
     } else if (
-      !auth.currentUser &&
+      !isAuth &&
       !(String(to.name) === 'login' || String(to.name) === 'register')
     ) {
       console.log('b');
       next({ name: 'login' });
+    } else if (isAuth && String(to.name) !== 'verify' && !isVerified) {
+      next({ name: 'verify' });
     } else if (from.name !== to.name) {
       next();
     }
