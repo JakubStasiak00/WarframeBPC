@@ -20,6 +20,26 @@
     </q-layout>
 </template>
 
+<script setup lang="ts">
+import { auth } from 'src/firebaseD/firebase-config';
+import { onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+
+const authListener = auth.onAuthStateChanged(user => {
+    if (user && !user.emailVerified) {
+        router.push('/verify')
+    } else if (user && user.emailVerified) {
+        router.push('/')
+    }
+})
+
+onBeforeMount(() => {
+    authListener
+})
+</script>
+
 <style lang="scss" scoped>
 .cst-banner {
 

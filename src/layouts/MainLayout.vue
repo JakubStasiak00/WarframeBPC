@@ -12,9 +12,12 @@
         <q-icon class="cst-banner__menu" name="menu" @click="openDrawer()" v-if="!$q.screen.gt.xs"></q-icon>
         <div class="cst-banner__credentials" v-else>
           <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
-            <img :src="userPhoto" alt="" class="cst-banner__user-image">
+            <img
+              :src="userPhoto ? userPhoto : 'https://firebasestorage.googleapis.com/v0/b/warframebpc.appspot.com/o/user-placeholder.jpg?alt=media&token=2e153f44-a117-4689-bfc3-4c175fd6a07c'"
+              alt="" class="cst-banner__user-image">
           </q-avatar>
-          <span class="cst-banner__username">{{ username }}</span>
+          <span class="cst-banner__username" v-if="username">{{ username }}</span>
+          <q-skeleton class="cst-banner__username" width="100px" height="10px" v-else></q-skeleton>
           <q-icon class="cst-banner__logout  text-h6" name="logout" @click="userLogout()"></q-icon>
         </div>
       </q-toolbar>
@@ -29,9 +32,11 @@
       <q-drawer class="side-menu bg-primary" v-model="isDrawerOpened" side="right" v-if="!$q.screen.gt.xs">
         <div class="cst-banner__credentials cst-banner__credentials--sidebar">
           <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
-            <img :src="userPhoto" alt="" class="cst-banner__user-image">
+            <img
+              :src="userPhoto ? userPhoto : 'https://firebasestorage.googleapis.com/v0/b/warframebpc.appspot.com/o/user-placeholder.jpg?alt=media&token=2e153f44-a117-4689-bfc3-4c175fd6a07c'">
           </q-avatar>
-          <span class="cst-banner__username">{{ username }}</span>
+          <span class="cst-banner__username" v-if="username">{{ username }}</span>
+          <q-skeleton class="cst-banner__username" width="100px" height="10px" v-else></q-skeleton>
           <q-icon class="cst-banner__logout text-h6" name="logout" @click="userLogout()"></q-icon>
         </div>
 
@@ -62,14 +67,14 @@
     </q-footer>
 
   </q-layout>
+  <!-- <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" v-else /> -->
 </template>
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { auth } from 'src/firebaseD/firebase-config';
 import { useRouter } from 'vue-router';
-import { onAuthStateChanged } from 'firebase/auth';
 
 const $q = useQuasar();
 const isDrawerOpened = ref(false);
@@ -87,9 +92,17 @@ const userLogout = async () => {
 
 }
 
-onAuthStateChanged(auth, () => {
-  username.value = String(auth.currentUser?.displayName)
-  userPhoto.value = String(auth.currentUser?.photoURL)
+const authListener = auth.onAuthStateChanged(user => {
+  if (!user) {
+    router.push('/login')
+  } else {
+    username.value = user.displayName || ''
+    userPhoto.value = user.photoURL || ''
+  }
+})
+
+onBeforeMount(() => {
+  authListener
 })
 </script>
 

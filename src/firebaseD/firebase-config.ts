@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,15 +22,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-
-onAuthStateChanged(auth, () => {
-  if (auth.currentUser) {
-    sessionStorage.setItem('isAuth', 'true');
-    sessionStorage.setItem('isVerified', `${auth.currentUser.emailVerified}`);
-  } else {
-    sessionStorage.removeItem('isAuth');
-    sessionStorage.removeItem('isVerified');
-  }
-});
 
 export { db, auth };

@@ -33,31 +33,5 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach((to, from, next) => {
-    const isAuth = Boolean(sessionStorage.getItem('isAuth'));
-    const isVerified = Boolean(sessionStorage.getItem('isVerified'));
-
-    if (
-      isAuth &&
-      (String(to.name) === 'login' ||
-        String(to.name) === 'register' ||
-        String(to.name) === 'verify') &&
-      isVerified
-    ) {
-      console.log('a');
-      next({ name: 'home' });
-    } else if (
-      !isAuth &&
-      !(String(to.name) === 'login' || String(to.name) === 'register')
-    ) {
-      console.log('b');
-      next({ name: 'login' });
-    } else if (isAuth && String(to.name) !== 'verify' && !isVerified) {
-      next({ name: 'verify' });
-    } else if (from.name !== to.name) {
-      next();
-    }
-  });
-
   return Router;
 });

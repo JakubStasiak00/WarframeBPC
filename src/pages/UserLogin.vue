@@ -5,7 +5,7 @@
             <div class="login">
                 <h2 class="login__heading">Welcome back Tenno!</h2>
                 <h3 class="login__encouragement"> Sign in below</h3>
-                <q-form class="login__form" @submit.prevent="loginUser(email, password)">
+                <q-form class="login__form" @submit.prevent="loginUser()">
 
                     <q-input class="login__input login__input--email" v-model="email" outlined name="email" required
                         placeholder="email" id="email" dense>
@@ -39,35 +39,27 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from 'src/firebaseD/firebase-config';
 import { useRouter } from 'vue-router';
+import { useFirebaseStore } from 'src/stores/firebaseStore';
 
 
 const email = ref('');
 const password = ref('');
 const shouldPersist = ref(true);
-const isPending = ref(true);
+const firebaseStore = useFirebaseStore()
 const router = useRouter()
 
-const loginUser = async (email: string, password: string) => {
+const loginUser = async () => {
 
     try {
-        const response = await signInWithEmailAndPassword(auth, email, password)
-        if (!response) {
-            throw new Error('login failed, try again later')
-        }
-        isPending.value = false
+        await firebaseStore.userLogin(email.value, password.value, shouldPersist.value)
         router.push('/')
     } catch (err: unknown) {
-        if (err instanceof Error) {
-            alert(err.message)
-        }
-
-        isPending.value = false
+        console.log(err)
     }
 
 }
+
 
 </script>
 

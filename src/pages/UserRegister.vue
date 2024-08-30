@@ -5,7 +5,7 @@
             <div class="register">
                 <h2 class="register__heading">Join our cause Tenno!</h2>
                 <h3 class="register__encouragement"> Create an account below</h3>
-                <q-form class="register__form" @submit.prevent="createUser(email, password)">
+                <q-form class="register__form" @submit.prevent="createUser()">
 
                     <q-input class="register__input register__input--username" v-model="username" outlined
                         name="username" required placeholder="username" id="username" :rules="usernameRules" lazy-rules
@@ -44,18 +44,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { auth } from 'src/firebaseD/firebase-config';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useRouter } from 'vue-router';
-import { doc, setDoc } from 'firebase/firestore';
-import { db } from 'src/firebaseD/firebase-config';
+import { useFirebaseStore } from 'src/stores/firebaseStore';
 
 
 const username = ref('');
 const password = ref('');
 const email = ref('');
 const router = useRouter();
-const isPending = ref(false);
 
 const usernameRules = ref([
     (val: string) => /^[a-zA-Z0-9]+$/.test(val) || 'Only letters and numbers',
@@ -74,39 +70,14 @@ const emailRules = ref([
     (val: string) => /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/.test(val) || 'E-mail format is incorrect'
 ])
 
-const createUser = async (email: string, password: string) => {
+const firebaseStore = useFirebaseStore()
 
-    try {
-        const response = await createUserWithEmailAndPassword(auth, email, password)
-        if (!response.user) {
-            throw new Error('Creating user failed')
-        }
-        if (auth.currentUser) {
-            await updateProfile(auth.currentUser, {
-                displayName: username.value,
-                photoURL: 'https://firebasestorage.googleapis.com/v0/b/warframebpc.appspot.com/o/user-placeholder.jpg?alt=media&token=2e153f44-a117-4689-bfc3-4c175fd6a07c'
-            })
-        }
-        const userInfoRef = doc(db, 'usersInfo', `${auth.currentUser?.uid}`)
-        await setDoc(userInfoRef, {
-            username: username.value,
-            profilePicture: 'https://firebasestorage.googleapis.com/v0/b/warframebpc.appspot.com/o/user-placeholder.jpg?alt=media&token=2e153f44-a117-4689-bfc3-4c175fd6a07c'
-        }).then(() => {
-            console.log('account created')
-        }).catch(() => {
-            throw new Error('Error while adding data to the database')
-        })
-        isPending.value = false
-        router.push('/')
-    } catch (err: unknown) {
-        if (err instanceof Error) {
-            alert(err.message)
-        }
+const createUser = async () => {
 
-        isPending.value = false
-    }
-
+    await firebaseStore.userRegister(email.value, password.value, username.value)
+    router.push('/verify')
 }
+
 
 </script>
 
