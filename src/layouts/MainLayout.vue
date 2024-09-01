@@ -59,7 +59,11 @@
     </q-header>
 
     <q-page-container>
-      <router-view />
+      <div class="main">
+        <div class="main__content">
+          <router-view />
+        </div>
+      </div>
     </q-page-container>
 
     <q-footer elevated class="bg-primary text-white">
@@ -67,7 +71,6 @@
     </q-footer>
 
   </q-layout>
-  <!-- <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" v-else /> -->
 </template>
 
 <script setup lang="ts">
@@ -104,6 +107,7 @@ const authListener = auth.onAuthStateChanged(user => {
 onBeforeMount(() => {
   authListener
 })
+
 </script>
 
 <style lang="scss" scoped>
@@ -116,6 +120,31 @@ $clr-link-hover: rgb(100, 210, 224);
 
   &:hover {
     color: $clr-link-hover;
+  }
+}
+
+.main {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../assets/WarframeSceneTwo.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(6px);
+    z-index: -1;
+    transform: scale(1.02);
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
   }
 }
 
@@ -172,6 +201,10 @@ $clr-link-hover: rgb(100, 210, 224);
     @include link-styling;
   }
 
+}
+
+.tab-menu {
+  background-color: #1e2630;
 }
 
 .side-menu {

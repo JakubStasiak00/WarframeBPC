@@ -169,6 +169,8 @@ onMounted(() => {
     "ducats ducats ducats ducsPerPlat ducsPerPlat ducsPerPlat"
     "sellOrders sellOrders sellOrders sellOrders sellOrders sellOrders ";
   grid-template-columns: 1fr 1fr 10fr 10fr 2fr 2fr;
+  outline: 3px solid rgb(56, 56, 56);
+  border-radius: 0.8rem;
 }
 
 ol {

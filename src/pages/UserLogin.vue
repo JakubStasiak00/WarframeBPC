@@ -4,7 +4,6 @@
             <div class="login-banner__dummy"></div>
             <div class="login">
                 <h2 class="login__heading">Welcome back Tenno!</h2>
-                <h3 class="login__encouragement"> Sign in below</h3>
                 <q-form class="login__form" @submit.prevent="loginUser()">
 
                     <q-input class="login__input login__input--email" v-model="email" outlined name="email" required
@@ -103,14 +102,8 @@ $text-light: rgb(173, 173, 173);
 
     &__heading {
         font-size: clamp(1.5rem, 1rem + 4vw, 3.2rem);
-        margin-bottom: 0;
+        margin-bottom: 1rem;
         line-height: clamp(2rem, 1rem + 3vw, 3.5rem);
-    }
-
-    &__encouragement {
-        font-size: clamp(0.8rem, 0.4rem + 2vw, 1.2rem);
-        margin-top: 0;
-        color: $text-light;
     }
 
     &__form {
