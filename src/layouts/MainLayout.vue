@@ -66,7 +66,7 @@
       </div>
     </q-page-container>
 
-    <q-footer elevated class="bg-primary text-white">
+    <q-footer elevated :reveal="false" class="bg-primary text-white">
       Created by Jacob
     </q-footer>
 
@@ -137,9 +137,9 @@ $clr-link-hover: rgb(100, 210, 224);
     background-image: url('../assets/WarframeSceneTwo.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-    filter: blur(6px);
+    filter: blur(4px);
     z-index: -1;
-    transform: scale(1.02);
+    transform: scale(1.1);
   }
 
   &__content {

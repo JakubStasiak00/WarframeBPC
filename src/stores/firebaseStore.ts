@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { defineStore } from 'pinia';
 import { auth, db } from 'src/firebaseD/firebase-config';
 
@@ -44,6 +44,26 @@ export const useFirebaseStore = defineStore('firebaseUtils', () => {
     username: string
   ) => {
     try {
+      const maxUsersRef = doc(db, 'appInfo', 'maxAccounts');
+      const testResult = await getDoc(maxUsersRef);
+
+      if (testResult.exists() && testResult.data().count > 0) {
+        console.log(
+          `you have ${testResult.data().count - 1} accounts remaining`
+        );
+
+        const collectionRef = collection(db, 'appInfo');
+        await setDoc(doc(collectionRef, 'maxAccounts'), {
+          count: testResult.data().count - 1,
+        });
+      } else if (testResult.exists() && testResult.data().count <= 0) {
+        throw new Error('Account limit reached');
+      } else {
+        console.log(
+          'Application encontered an issue while connecting to backend services'
+        );
+      }
+
       const response = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -66,6 +86,7 @@ export const useFirebaseStore = defineStore('firebaseUtils', () => {
         username: username,
         profilePicture:
           'https://firebasestorage.googleapis.com/v0/b/warframebpc.appspot.com/o/user-placeholder.jpg?alt=media&token=2e153f44-a117-4689-bfc3-4c175fd6a07c',
+        currency: 5,
       })
         .then(() => {
           console.log('account created');

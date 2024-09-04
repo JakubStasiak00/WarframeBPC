@@ -1,7 +1,8 @@
 <template>
   <q-page class="row items-center justify-center q-py-md base-font-size" style="gap: 40px;">
-    <div v-if="!listOfItems" class="row items-center justify-around" style="gap: 1.5rem;">
-      <q-file outlined name="pickedScreenshot" v-model="pickedScreenshot" accept="image/*" label="Upload screenshot">
+    <div v-if="!listOfItems" class="row items-center justify-around file-upload" style="gap: 1.5rem;">
+      <q-file outlined name="pickedScreenshot" class="file-upload__field" v-model="pickedScreenshot" accept="image/*"
+        label="Upload screenshot">
         <template v-slot:prepend>
           <q-icon name="image" />
         </template>
@@ -14,17 +15,19 @@
 
         <q-card-section class="flex column items-center justify-around"
           style="gap: 1rem; max-width: 30rem; grid-area: itemIcon;">
-          <div><img :src="`https://warframe.market/static/assets/${itemsInformation[index].data.i18n.en.subIcon}`"
+          <div><img
+              :src="`https://warframe.market/static/assets/${itemsInformation[index].data.i18n.en.subIcon || itemsInformation[index].data.i18n.en.icon}`"
               style="max-height: 5rem;" alt="image"></div>
           <div class="text-h6 text-wrap">{{ itemsInformation[index].data.i18n.en.name }}</div>
         </q-card-section>
 
-        <q-card-section style="grid-area: ducats;">
+        <q-card-section v-if="itemsInformation[index].data.ducats" style="grid-area: ducats;">
           <p class="flex text-h6 justify-center"><span>{{ itemsInformation[index].data.ducats }}</span><img
               src="../assets/OrokinDucats.webp" style="max-height: 32px;" alt="ducat"></p>
         </q-card-section>
 
-        <q-card-section class="flex items-center text-h6" style="grid-area: ducsPerPlat;">
+        <q-card-section class="flex items-center text-h6" v-if="itemsInformation[index].data.ducats"
+          style="grid-area: ducsPerPlat;">
           <p>{{ calculateDucatToPlatinumRatio(itemsInformation[index].data.ducats,
             getAveragePlatinum(item.data)) }}
           </p>
@@ -162,6 +165,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+.file-upload {
+  &__field {
+    background-color: rgb(241, 241, 241);
+    border: 2px solid black;
+    border-radius: 0.5rem;
+  }
+}
+
 .itemCardLayout {
   display: grid;
   grid-template-areas:
