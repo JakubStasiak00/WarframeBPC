@@ -98,6 +98,8 @@ const userLogout = async () => {
 const authListener = auth.onAuthStateChanged(user => {
   if (!user) {
     router.push('/login')
+  } else if (!user.emailVerified) {
+    router.push('/verify')
   } else {
     username.value = user.displayName || ''
     userPhoto.value = user.photoURL || ''
