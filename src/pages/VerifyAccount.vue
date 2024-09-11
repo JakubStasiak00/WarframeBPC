@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { auth } from 'src/firebaseD/firebase-config';
 import { useRouter } from 'vue-router';
-import { onAuthStateChanged, sendEmailVerification } from 'firebase/auth';
+import { sendEmailVerification } from 'firebase/auth';
 import { onMounted, ref } from 'vue';
 
 const router = useRouter()
@@ -92,8 +92,8 @@ onMounted(async () => {
     sendEmailVerificationToUser()
 })
 
-onAuthStateChanged(auth, user => {
-    if (user?.emailVerified) {
+auth.onAuthStateChanged(user => {
+    if (user && user.emailVerified) {
         router.push('/')
     }
 })

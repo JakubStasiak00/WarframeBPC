@@ -66,10 +66,6 @@
       </div>
     </q-page-container>
 
-    <q-footer elevated :reveal="false" class="bg-primary text-white">
-      Created by Jacob
-    </q-footer>
-
   </q-layout>
 </template>
 
@@ -113,9 +109,6 @@ onBeforeMount(() => {
 </script>
 
 <style lang="scss" scoped>
-$clr-link-dormant: rgb(160, 187, 235);
-$clr-link-hover: rgb(100, 210, 224);
-
 @mixin link-styling {
   color: $clr-link-dormant;
   font-size: 1rem;
@@ -158,6 +151,7 @@ $clr-link-hover: rgb(100, 210, 224);
   &__title {
     font-size: clamp(1.7rem, 2vw + 0.5rem, 2.7rem);
     line-height: 2rem;
+    color: $text-primary;
   }
 
   &__avatar {
@@ -173,6 +167,7 @@ $clr-link-hover: rgb(100, 210, 224);
 
   &__username {
     font-size: clamp(0.9rem, 0.3vw + 0.7rem, 1.2rem);
+    color: $text-primary;
   }
 
   &__logout {
@@ -207,6 +202,10 @@ $clr-link-hover: rgb(100, 210, 224);
 
 .tab-menu {
   background-color: #1e2630;
+
+  &__link {
+    @include link-styling;
+  }
 }
 
 .side-menu {
