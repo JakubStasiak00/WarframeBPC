@@ -13,7 +13,7 @@
             </q-toolbar>
         </q-header>
 
-        <q-page-container>
+        <q-page-container class="cst-bg-dark">
             <router-view />
         </q-page-container>
 
@@ -41,6 +41,10 @@ onBeforeMount(() => {
 </script>
 
 <style lang="scss" scoped>
+.cst-bg-dark {
+    background-color: $clr-bg-dark;
+}
+
 .cst-banner {
 
     display: flex;

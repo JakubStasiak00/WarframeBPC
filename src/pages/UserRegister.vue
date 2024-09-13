@@ -1,5 +1,5 @@
 <template>
-    <q-page>
+    <q-page class="background-dark">
         <q-card class="register-banner">
             <div class="register-banner__dummy"></div>
             <div class="register">

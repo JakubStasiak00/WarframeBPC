@@ -225,6 +225,10 @@ onMounted(() => {
   align-items: start;
   width: clamp(330px, calc(4rem + 4vw), 500px);
   min-height: 400px;
+  background-color: $primary;
+  color: $text-primary;
+  box-shadow: 8px 8px 5px -2px rgba(0, 0, 0, 1);
+  border-radius: 0.6rem;
 }
 
 .item-image {
@@ -284,10 +288,19 @@ onMounted(() => {
 .orders__heading {
   font-size: clamp(1rem, 0.8rem + 1vw, 2rem);
   line-height: 1.7rem;
+  text-wrap: stable;
 }
 
 .orders {
   grid-area: orders;
+}
+
+.orders__user {
+  color: $clr-link-dormant;
+
+  &:hover {
+    color: $clr-link-hover;
+  }
 }
 
 ol {
