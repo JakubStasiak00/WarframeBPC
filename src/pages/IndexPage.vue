@@ -45,7 +45,7 @@
           <h2 class="item-name__heading">{{ itemsInformation[index].data.i18n.en.name }}</h2>
         </q-card-section>
 
-        <q-card-section class="orders">
+        <q-card-section class="orders" v-if="item.data.sell.length > 0">
           <h2 class="orders__heading">Top sell orders:</h2>
           <ol class="orders__list">
             <li v-for="index in item.data.sell.length" :key="index" class="orders__item">
@@ -61,6 +61,9 @@
           <br v-if="item.data.sell.length < 3" />
           <br v-if="item.data.sell.length < 2" />
         </q-card-section>
+        <q-card-section class="orders" v-else>
+          <div>There are no online orders for this item</div>
+        </q-card-section>
 
       </q-card>
     </div>
@@ -73,6 +76,7 @@ import { onMounted, ref } from 'vue';
 import { RootOrders, Data } from 'src/types/TopOrders';
 import { RootInfo } from 'src/types/ItemInformation';
 import { auth } from 'src/firebaseD/firebase-config';
+import { useQuasar } from 'quasar';
 
 defineOptions({
   name: 'IndexPage'
@@ -83,6 +87,7 @@ const listOfItems = ref<string[] | null>(null);
 const listOfItemsUrlNames = ref<string[] | null>(null);
 const itemsData = ref<RootOrders[]>([]);
 const itemsInformation = ref<RootInfo[]>([]);
+const $q = useQuasar()
 
 const sendScreenshotToBackend = async () => {
   const formData = new FormData();
@@ -102,20 +107,34 @@ const sendScreenshotToBackend = async () => {
     });
     // process received values to exclude accidental false letters and numbers related to amount of items owned
     listOfItems.value = Array.from(response.data.phrases as Iterable<string>).filter(word => {
-      const hasNumber = /\d/;
+      const isOnlyNumbers = /^x?\d+$/i;
       const oneLetter = /^[A-Za-z]$/;
-      return !hasNumber.test(word as string) && !oneLetter.test(word as string);
+      return !isOnlyNumbers.test(word as string) && !oneLetter.test(word as string);
     });
     // separate displayed names from url names used to make the next api call
     listOfItemsUrlNames.value = listOfItems.value.map(e => e.replace(/ /g, '_'));
 
     for (const e of listOfItemsUrlNames.value) {
-      console.log(e);
-      const itemResponse = await axios.post('http://localhost:3000/tradable-items', { e });
-      console.log(itemResponse);
-      itemsData.value.push(itemResponse.data.itemResponse);
+      try {
+        const itemResponse = await axios.post('http://localhost:3000/tradable-items', { e });
+        if (itemResponse.data.sendNext) {
+          console.warn(`Skipping item: ${e} because it doesn't exist.`);
+          $q.notify({
+            message: `Error fetching item: ${e}`,
+            position: 'top-left',
+            timeout: 1500
+          });
+          continue;
+        }
 
-      itemsInformation.value.push(itemResponse.data.itemInformation)
+        itemsData.value.push(itemResponse.data.itemResponse);
+
+        itemsInformation.value.push(itemResponse.data.itemInformation)
+      } catch (err2) {
+        console.error(`Error processing item ${e}:`, err2);
+        continue;
+      }
+
     }
     console.log(itemsData);
   } catch (err) {
@@ -145,6 +164,8 @@ onMounted(() => {
 .main {
   display: flex;
   justify-content: center;
+  container-type: inline-size;
+  container-name: main-container;
 }
 
 .file-upload {
@@ -162,9 +183,34 @@ onMounted(() => {
 
 .items {
   display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 1rem;
   padding: 1rem;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  height: fit-content;
+}
+
+@container main-container (max-width: 1740px) {
+  .items {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+@container main-container (max-width: 1400px) {
+  .items {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@container main-container (max-width: 1050px) {
+  .items {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@container main-container (max-width: 680px) {
+  .items {
+    grid-template-columns: 1fr;
+  }
 }
 
 .card {
@@ -173,14 +219,19 @@ onMounted(() => {
     "image ducats"
     "name name"
     "orders orders";
+  padding: 1rem;
+  grid-template-rows: max-content max-content max-content;
+  justify-content: center;
+  align-items: start;
+  width: clamp(330px, calc(4rem + 4vw), 500px);
+  min-height: 400px;
 }
 
 .item-image {
   grid-area: image;
 
   &__picture {
-    height: 5rem;
-    padding-top: 1rem;
+    max-height: 5rem;
   }
 }
 
@@ -232,7 +283,7 @@ onMounted(() => {
 .item-name__heading,
 .orders__heading {
   font-size: clamp(1rem, 0.8rem + 1vw, 2rem);
-  line-height: 1rem;
+  line-height: 1.7rem;
 }
 
 .orders {

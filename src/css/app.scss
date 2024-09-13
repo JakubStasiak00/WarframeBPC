@@ -18,3 +18,9 @@ figcaption {
   text-wrap: pretty;
   max-width: 65ch;
 }
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
