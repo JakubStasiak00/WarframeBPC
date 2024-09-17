@@ -90,12 +90,18 @@ const itemsInformation = ref<RootInfo[]>([]);
 const $q = useQuasar()
 
 const sendScreenshotToBackend = async () => {
-  const formData = new FormData();
-
   if (!pickedScreenshot.value) {
     alert('Pick an inventory screenshot first !');
     return;
   }
+
+  const checkCredits = await axios.post('http://localhost:3000/has-credits', { uid: auth.currentUser?.uid });
+  if (!checkCredits.data.shouldAllowRequest) {
+    alert(`${checkCredits.data.message}`)
+    return;
+  }
+
+  const formData = new FormData();
 
   formData.append('screenshot', pickedScreenshot.value);
 
