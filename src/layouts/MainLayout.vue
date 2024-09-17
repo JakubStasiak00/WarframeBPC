@@ -11,6 +11,10 @@
         </q-toolbar-title>
         <q-icon class="cst-banner__menu" name="menu" @click="openDrawer()" v-if="!$q.screen.gt.xs"></q-icon>
         <div class="cst-banner__credentials" v-else>
+          <div class="cst-banner__credits" v-if="credits">
+            {{ credits }}
+            <img class="cst-banner__credits-image" src="../assets/Credits.webp" alt="credits">
+          </div>
           <q-avatar class="cst-banner__avatar cst-banner__avatar--user">
             <img
               :src="userPhoto ? userPhoto : 'https://firebasestorage.googleapis.com/v0/b/warframebpc.appspot.com/o/user-placeholder.jpg?alt=media&token=2e153f44-a117-4689-bfc3-4c175fd6a07c'"
@@ -72,14 +76,16 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { onBeforeMount, ref } from 'vue';
-import { auth } from 'src/firebaseD/firebase-config';
+import { auth, db } from 'src/firebaseD/firebase-config';
 import { useRouter } from 'vue-router';
+import { doc, getDoc } from 'firebase/firestore';
 
 const $q = useQuasar();
 const isDrawerOpened = ref(false);
 const router = useRouter()
 const username = ref('')
 const userPhoto = ref('')
+const credits = ref(0)
 
 const openDrawer = () => {
   isDrawerOpened.value = !isDrawerOpened.value;
@@ -91,7 +97,7 @@ const userLogout = async () => {
 
 }
 
-const authListener = auth.onAuthStateChanged(user => {
+const authListener = auth.onAuthStateChanged(async user => {
   if (!user) {
     router.push('/login')
   } else if (!user.emailVerified) {
@@ -99,6 +105,11 @@ const authListener = auth.onAuthStateChanged(user => {
   } else {
     username.value = user.displayName || ''
     userPhoto.value = user.photoURL || ''
+    const docRef = doc(db, 'usersInfo', user.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      credits.value = docSnap.data().currency
+    }
   }
 })
 
@@ -152,6 +163,14 @@ onBeforeMount(() => {
     font-size: clamp(1.7rem, 2vw + 0.5rem, 2.7rem);
     line-height: 2rem;
     color: $text-primary;
+  }
+
+  &__credits {
+    color: $text-primary;
+  }
+
+  &__credits-image {
+    height: 30px;
   }
 
   &__avatar {
